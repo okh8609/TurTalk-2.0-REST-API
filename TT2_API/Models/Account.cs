@@ -25,15 +25,15 @@ namespace TT2_API.Models
             this.Account2 = new HashSet<Account>();
         }
     
-        public int uid { get; set; }
+        public int id { get; set; }
         public string type { get; set; }
     
-        public virtual PermanentAccount PermanentAccount { get; set; }
-        public virtual TemporaryAccount TemporaryAccount { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ChatMsg> ChatMsg { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ChatMsg> ChatMsg1 { get; set; }
+        public virtual PermanentAccount PermanentAccount { get; set; }
+        public virtual TemporaryAccount TemporaryAccount { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TimeLimitedChatMsg> TimeLimitedChatMsg { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

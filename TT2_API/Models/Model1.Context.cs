@@ -13,10 +13,10 @@ namespace TT2_API.Models
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class ChatDBEntities1 : DbContext
+    public partial class ChatDBEntities2 : DbContext
     {
-        public ChatDBEntities1()
-            : base("name=ChatDBEntities1")
+        public ChatDBEntities2()
+            : base("name=ChatDBEntities2")
         {
         }
     

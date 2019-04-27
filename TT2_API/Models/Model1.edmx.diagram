@@ -4,16 +4,16 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="7b3c0cae7c814b18ae8208c81bc7bf13" Name="Diagram1">
-        <EntityTypeShape EntityType="ChatDBModel.Account" Width="1.5" PointX="3" PointY="2.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="ChatDBModel.ChatMsg" Width="1.5" PointX="5.25" PointY="1.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="ChatDBModel.PermanentAccount" Width="1.5" PointX="0.75" PointY="2.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="ChatDBModel.TemporaryAccount" Width="1.5" PointX="0.75" PointY="5.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="ChatDBModel.TimeLimitedChatMsg" Width="1.5" PointX="5.25" PointY="4.375" IsExpanded="true" />
-        <AssociationConnector Association="ChatDBModel.FK_Account_PermanentAccount" ManuallyRouted="false" />
-        <AssociationConnector Association="ChatDBModel.FK_Account_TemporaryAccount" ManuallyRouted="false" />
+      <Diagram DiagramId="26d6dfbc0f8b4b818d9f0b1d2bd6ac5e" Name="Diagram1">
+        <EntityTypeShape EntityType="ChatDBModel.Account" Width="1.5" PointX="0.75" PointY="6.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="ChatDBModel.ChatMsg" Width="1.5" PointX="3" PointY="1.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="ChatDBModel.PermanentAccount" Width="1.5" PointX="3" PointY="4.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="ChatDBModel.TemporaryAccount" Width="1.5" PointX="3" PointY="8.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="ChatDBModel.TimeLimitedChatMsg" Width="1.5" PointX="3" PointY="11.25" IsExpanded="true" />
         <AssociationConnector Association="ChatDBModel.FK_ChatMsg_Account" ManuallyRouted="false" />
         <AssociationConnector Association="ChatDBModel.FK_ChatMsg_Account1" ManuallyRouted="false" />
+        <AssociationConnector Association="ChatDBModel.FK_PermanentAccount_Account" ManuallyRouted="false" />
+        <AssociationConnector Association="ChatDBModel.FK_TemporaryAccount_Account" ManuallyRouted="false" />
         <AssociationConnector Association="ChatDBModel.FK_TimeLimitedChatMsg_Account" ManuallyRouted="false" />
         <AssociationConnector Association="ChatDBModel.FK_TimeLimitedChatMsg_Account1" ManuallyRouted="false" />
         <AssociationConnector Association="ChatDBModel.Friendship" ManuallyRouted="false" />
