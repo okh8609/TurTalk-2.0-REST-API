@@ -34,11 +34,11 @@ namespace TT2_API.Controllers
         public string password { get; set; }
     }
 
-    //API
+    //此Controller在管理跟帳戶有關的資訊
     [RoutePrefix("api/account")]
     public class AccountController : ApiController
     {
-        private ChatDBEntities2 db = new ChatDBEntities2();
+        private ChatDBEntities1 db = new ChatDBEntities1();
         private MailService mailService = new MailService();
 
         // POST api/account/reg
@@ -234,6 +234,11 @@ namespace TT2_API.Controllers
             };
         }
 
+        //缺修改帳戶資料的API
+        //POST /api/account/change/picture/{id}/{pict_path}
+        //POST /api/account/change/password/{id}/{newpassword}
+        //POST /api/account/change/name/{id}/{newname}
+
 
         #region Hash密碼
         private string HashPassword(string Password)
@@ -257,7 +262,6 @@ namespace TT2_API.Controllers
             return Hashresult;
         }
         #endregion
-
 
         protected override void Dispose(bool disposing)
         {

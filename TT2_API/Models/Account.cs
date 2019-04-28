@@ -19,8 +19,8 @@ namespace TT2_API.Models
         {
             this.ChatMsg = new HashSet<ChatMsg>();
             this.ChatMsg1 = new HashSet<ChatMsg>();
-            this.TimeLimitedChatMsg = new HashSet<TimeLimitedChatMsg>();
-            this.TimeLimitedChatMsg1 = new HashSet<TimeLimitedChatMsg>();
+            this.ChatMsg_TimeLimited = new HashSet<ChatMsg_TimeLimited>();
+            this.ChatMsg_TimeLimited1 = new HashSet<ChatMsg_TimeLimited>();
             this.Account1 = new HashSet<Account>();
             this.Account2 = new HashSet<Account>();
         }
@@ -35,9 +35,9 @@ namespace TT2_API.Models
         public virtual PermanentAccount PermanentAccount { get; set; }
         public virtual TemporaryAccount TemporaryAccount { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<TimeLimitedChatMsg> TimeLimitedChatMsg { get; set; }
+        public virtual ICollection<ChatMsg_TimeLimited> ChatMsg_TimeLimited { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<TimeLimitedChatMsg> TimeLimitedChatMsg1 { get; set; }
+        public virtual ICollection<ChatMsg_TimeLimited> ChatMsg_TimeLimited1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Account> Account1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

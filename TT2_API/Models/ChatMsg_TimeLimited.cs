@@ -12,7 +12,7 @@ namespace TT2_API.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class TimeLimitedChatMsg
+    public partial class ChatMsg_TimeLimited
     {
         public int id { get; set; }
         public int uid_from { get; set; }

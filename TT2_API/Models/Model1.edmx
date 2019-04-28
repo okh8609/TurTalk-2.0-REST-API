@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="ChatDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="ChatDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Account">
           <Key>
             <PropertyRef Name="id" />
@@ -22,7 +22,17 @@
           <Property Name="msg" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="time" Type="datetime" Nullable="false" />
         </EntityType>
-        <EntityType Name="Friendship">
+        <EntityType Name="ChatMsg_TimeLimited">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="uid_from" Type="int" Nullable="false" />
+          <Property Name="uid_to" Type="int" Nullable="false" />
+          <Property Name="msg" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="time" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Contacts">
           <Key>
             <PropertyRef Name="uid_from" />
             <PropertyRef Name="uid_to" />
@@ -53,16 +63,6 @@
           <Property Name="ipv4" Type="varchar" MaxLength="15" />
           <Property Name="eff_period" Type="time" Precision="2" Nullable="false" />
         </EntityType>
-        <EntityType Name="TimeLimitedChatMsg">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="uid_from" Type="int" Nullable="false" />
-          <Property Name="uid_to" Type="int" Nullable="false" />
-          <Property Name="msg" Type="nvarchar" MaxLength="256" Nullable="false" />
-          <Property Name="time" Type="datetime" Nullable="false" />
-        </EntityType>
         <Association Name="FK_ChatMsg_Account">
           <End Role="Account" Type="Self.Account" Multiplicity="1" />
           <End Role="ChatMsg" Type="Self.ChatMsg" Multiplicity="*" />
@@ -89,24 +89,24 @@
         </Association>
         <Association Name="FK_Friendship_Account">
           <End Role="Account" Type="Self.Account" Multiplicity="1" />
-          <End Role="Friendship" Type="Self.Friendship" Multiplicity="*" />
+          <End Role="Contacts" Type="Self.Contacts" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Account">
               <PropertyRef Name="id" />
             </Principal>
-            <Dependent Role="Friendship">
+            <Dependent Role="Contacts">
               <PropertyRef Name="uid_from" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Friendship_Account1">
           <End Role="Account" Type="Self.Account" Multiplicity="1" />
-          <End Role="Friendship" Type="Self.Friendship" Multiplicity="*" />
+          <End Role="Contacts" Type="Self.Contacts" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Account">
               <PropertyRef Name="id" />
             </Principal>
-            <Dependent Role="Friendship">
+            <Dependent Role="Contacts">
               <PropertyRef Name="uid_to" />
             </Dependent>
           </ReferentialConstraint>
@@ -137,24 +137,24 @@
         </Association>
         <Association Name="FK_TimeLimitedChatMsg_Account">
           <End Role="Account" Type="Self.Account" Multiplicity="1" />
-          <End Role="TimeLimitedChatMsg" Type="Self.TimeLimitedChatMsg" Multiplicity="*" />
+          <End Role="ChatMsg_TimeLimited" Type="Self.ChatMsg_TimeLimited" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Account">
               <PropertyRef Name="id" />
             </Principal>
-            <Dependent Role="TimeLimitedChatMsg">
+            <Dependent Role="ChatMsg_TimeLimited">
               <PropertyRef Name="uid_from" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_TimeLimitedChatMsg_Account1">
           <End Role="Account" Type="Self.Account" Multiplicity="1" />
-          <End Role="TimeLimitedChatMsg" Type="Self.TimeLimitedChatMsg" Multiplicity="*" />
+          <End Role="ChatMsg_TimeLimited" Type="Self.ChatMsg_TimeLimited" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Account">
               <PropertyRef Name="id" />
             </Principal>
-            <Dependent Role="TimeLimitedChatMsg">
+            <Dependent Role="ChatMsg_TimeLimited">
               <PropertyRef Name="uid_to" />
             </Dependent>
           </ReferentialConstraint>
@@ -162,10 +162,10 @@
         <EntityContainer Name="ChatDBModelStoreContainer">
           <EntitySet Name="Account" EntityType="Self.Account" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ChatMsg" EntityType="Self.ChatMsg" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Friendship" EntityType="Self.Friendship" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ChatMsg_TimeLimited" EntityType="Self.ChatMsg_TimeLimited" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Contacts" EntityType="Self.Contacts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PermanentAccount" EntityType="Self.PermanentAccount" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TemporaryAccount" EntityType="Self.TemporaryAccount" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="TimeLimitedChatMsg" EntityType="Self.TimeLimitedChatMsg" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_ChatMsg_Account" Association="Self.FK_ChatMsg_Account">
             <End Role="Account" EntitySet="Account" />
             <End Role="ChatMsg" EntitySet="ChatMsg" />
@@ -176,11 +176,11 @@
           </AssociationSet>
           <AssociationSet Name="FK_Friendship_Account" Association="Self.FK_Friendship_Account">
             <End Role="Account" EntitySet="Account" />
-            <End Role="Friendship" EntitySet="Friendship" />
+            <End Role="Contacts" EntitySet="Contacts" />
           </AssociationSet>
           <AssociationSet Name="FK_Friendship_Account1" Association="Self.FK_Friendship_Account1">
             <End Role="Account" EntitySet="Account" />
-            <End Role="Friendship" EntitySet="Friendship" />
+            <End Role="Contacts" EntitySet="Contacts" />
           </AssociationSet>
           <AssociationSet Name="FK_PermanentAccount_Account" Association="Self.FK_PermanentAccount_Account">
             <End Role="Account" EntitySet="Account" />
@@ -192,14 +192,15 @@
           </AssociationSet>
           <AssociationSet Name="FK_TimeLimitedChatMsg_Account" Association="Self.FK_TimeLimitedChatMsg_Account">
             <End Role="Account" EntitySet="Account" />
-            <End Role="TimeLimitedChatMsg" EntitySet="TimeLimitedChatMsg" />
+            <End Role="ChatMsg_TimeLimited" EntitySet="ChatMsg_TimeLimited" />
           </AssociationSet>
           <AssociationSet Name="FK_TimeLimitedChatMsg_Account1" Association="Self.FK_TimeLimitedChatMsg_Account1">
             <End Role="Account" EntitySet="Account" />
-            <End Role="TimeLimitedChatMsg" EntitySet="TimeLimitedChatMsg" />
+            <End Role="ChatMsg_TimeLimited" EntitySet="ChatMsg_TimeLimited" />
           </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="ChatDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -213,10 +214,10 @@
           <NavigationProperty Name="ChatMsg1" Relationship="Self.FK_ChatMsg_Account1" FromRole="Account" ToRole="ChatMsg" />
           <NavigationProperty Name="PermanentAccount" Relationship="Self.FK_PermanentAccount_Account" FromRole="Account" ToRole="PermanentAccount" />
           <NavigationProperty Name="TemporaryAccount" Relationship="Self.FK_TemporaryAccount_Account" FromRole="Account" ToRole="TemporaryAccount" />
-          <NavigationProperty Name="TimeLimitedChatMsg" Relationship="Self.FK_TimeLimitedChatMsg_Account" FromRole="Account" ToRole="TimeLimitedChatMsg" />
-          <NavigationProperty Name="TimeLimitedChatMsg1" Relationship="Self.FK_TimeLimitedChatMsg_Account1" FromRole="Account" ToRole="TimeLimitedChatMsg" />
-          <NavigationProperty Name="Account1" Relationship="Self.Friendship" FromRole="Account" ToRole="Account1" />
-          <NavigationProperty Name="Account2" Relationship="Self.Friendship" FromRole="Account1" ToRole="Account" />
+          <NavigationProperty Name="ChatMsg_TimeLimited" Relationship="Self.FK_TimeLimitedChatMsg_Account" FromRole="Account" ToRole="ChatMsg_TimeLimited" />
+          <NavigationProperty Name="ChatMsg_TimeLimited1" Relationship="Self.FK_TimeLimitedChatMsg_Account1" FromRole="Account" ToRole="ChatMsg_TimeLimited" />
+          <NavigationProperty Name="Account1" Relationship="Self.Contacts" FromRole="Account" ToRole="Account1" />
+          <NavigationProperty Name="Account2" Relationship="Self.Contacts" FromRole="Account1" ToRole="Account" />
         </EntityType>
         <EntityType Name="ChatMsg">
           <Key>
@@ -229,6 +230,18 @@
           <Property Name="time" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="Account" Relationship="Self.FK_ChatMsg_Account" FromRole="ChatMsg" ToRole="Account" />
           <NavigationProperty Name="Account1" Relationship="Self.FK_ChatMsg_Account1" FromRole="ChatMsg" ToRole="Account" />
+        </EntityType>
+        <EntityType Name="ChatMsg_TimeLimited">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="uid_from" Type="Int32" Nullable="false" />
+          <Property Name="uid_to" Type="Int32" Nullable="false" />
+          <Property Name="msg" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="time" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Account" Relationship="Self.FK_TimeLimitedChatMsg_Account" FromRole="ChatMsg_TimeLimited" ToRole="Account" />
+          <NavigationProperty Name="Account1" Relationship="Self.FK_TimeLimitedChatMsg_Account1" FromRole="ChatMsg_TimeLimited" ToRole="Account" />
         </EntityType>
         <EntityType Name="PermanentAccount">
           <Key>
@@ -254,18 +267,6 @@
           <Property Name="ipv4" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
           <Property Name="eff_period" Type="Time" Nullable="false" Precision="2" />
           <NavigationProperty Name="Account" Relationship="Self.FK_TemporaryAccount_Account" FromRole="TemporaryAccount" ToRole="Account" />
-        </EntityType>
-        <EntityType Name="TimeLimitedChatMsg">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="uid_from" Type="Int32" Nullable="false" />
-          <Property Name="uid_to" Type="Int32" Nullable="false" />
-          <Property Name="msg" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="time" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Account" Relationship="Self.FK_TimeLimitedChatMsg_Account" FromRole="TimeLimitedChatMsg" ToRole="Account" />
-          <NavigationProperty Name="Account1" Relationship="Self.FK_TimeLimitedChatMsg_Account1" FromRole="TimeLimitedChatMsg" ToRole="Account" />
         </EntityType>
         <Association Name="FK_ChatMsg_Account">
           <End Role="Account" Type="Self.Account" Multiplicity="1" />
@@ -317,38 +318,38 @@
         </Association>
         <Association Name="FK_TimeLimitedChatMsg_Account">
           <End Role="Account" Type="Self.Account" Multiplicity="1" />
-          <End Role="TimeLimitedChatMsg" Type="Self.TimeLimitedChatMsg" Multiplicity="*" />
+          <End Role="ChatMsg_TimeLimited" Type="Self.ChatMsg_TimeLimited" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Account">
               <PropertyRef Name="id" />
             </Principal>
-            <Dependent Role="TimeLimitedChatMsg">
+            <Dependent Role="ChatMsg_TimeLimited">
               <PropertyRef Name="uid_from" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_TimeLimitedChatMsg_Account1">
           <End Role="Account" Type="Self.Account" Multiplicity="1" />
-          <End Role="TimeLimitedChatMsg" Type="Self.TimeLimitedChatMsg" Multiplicity="*" />
+          <End Role="ChatMsg_TimeLimited" Type="Self.ChatMsg_TimeLimited" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Account">
               <PropertyRef Name="id" />
             </Principal>
-            <Dependent Role="TimeLimitedChatMsg">
+            <Dependent Role="ChatMsg_TimeLimited">
               <PropertyRef Name="uid_to" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="Friendship">
+        <Association Name="Contacts">
           <End Role="Account" Type="Self.Account" Multiplicity="*" />
           <End Role="Account1" Type="Self.Account" Multiplicity="*" />
         </Association>
-        <EntityContainer Name="ChatDBEntities2" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="ChatDBEntities1" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Account" EntityType="Self.Account" />
           <EntitySet Name="ChatMsg" EntityType="Self.ChatMsg" />
+          <EntitySet Name="ChatMsg_TimeLimited" EntityType="Self.ChatMsg_TimeLimited" />
           <EntitySet Name="PermanentAccount" EntityType="Self.PermanentAccount" />
           <EntitySet Name="TemporaryAccount" EntityType="Self.TemporaryAccount" />
-          <EntitySet Name="TimeLimitedChatMsg" EntityType="Self.TimeLimitedChatMsg" />
           <AssociationSet Name="FK_ChatMsg_Account" Association="Self.FK_ChatMsg_Account">
             <End Role="Account" EntitySet="Account" />
             <End Role="ChatMsg" EntitySet="ChatMsg" />
@@ -367,13 +368,13 @@
           </AssociationSet>
           <AssociationSet Name="FK_TimeLimitedChatMsg_Account" Association="Self.FK_TimeLimitedChatMsg_Account">
             <End Role="Account" EntitySet="Account" />
-            <End Role="TimeLimitedChatMsg" EntitySet="TimeLimitedChatMsg" />
+            <End Role="ChatMsg_TimeLimited" EntitySet="ChatMsg_TimeLimited" />
           </AssociationSet>
           <AssociationSet Name="FK_TimeLimitedChatMsg_Account1" Association="Self.FK_TimeLimitedChatMsg_Account1">
             <End Role="Account" EntitySet="Account" />
-            <End Role="TimeLimitedChatMsg" EntitySet="TimeLimitedChatMsg" />
+            <End Role="ChatMsg_TimeLimited" EntitySet="ChatMsg_TimeLimited" />
           </AssociationSet>
-          <AssociationSet Name="Friendship" Association="Self.Friendship">
+          <AssociationSet Name="Contacts" Association="Self.Contacts">
             <End Role="Account" EntitySet="Account" />
             <End Role="Account1" EntitySet="Account" />
           </AssociationSet>
@@ -383,7 +384,7 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="ChatDBModelStoreContainer" CdmEntityContainer="ChatDBEntities2">
+        <EntityContainerMapping StorageEntityContainer="ChatDBModelStoreContainer" CdmEntityContainer="ChatDBEntities1">
           <EntitySetMapping Name="Account">
             <EntityTypeMapping TypeName="ChatDBModel.Account">
               <MappingFragment StoreEntitySet="Account">
@@ -395,6 +396,17 @@
           <EntitySetMapping Name="ChatMsg">
             <EntityTypeMapping TypeName="ChatDBModel.ChatMsg">
               <MappingFragment StoreEntitySet="ChatMsg">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="uid_from" ColumnName="uid_from" />
+                <ScalarProperty Name="uid_to" ColumnName="uid_to" />
+                <ScalarProperty Name="msg" ColumnName="msg" />
+                <ScalarProperty Name="time" ColumnName="time" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ChatMsg_TimeLimited">
+            <EntityTypeMapping TypeName="ChatDBModel.ChatMsg_TimeLimited">
+              <MappingFragment StoreEntitySet="ChatMsg_TimeLimited">
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="uid_from" ColumnName="uid_from" />
                 <ScalarProperty Name="uid_to" ColumnName="uid_to" />
@@ -428,18 +440,7 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="TimeLimitedChatMsg">
-            <EntityTypeMapping TypeName="ChatDBModel.TimeLimitedChatMsg">
-              <MappingFragment StoreEntitySet="TimeLimitedChatMsg">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="uid_from" ColumnName="uid_from" />
-                <ScalarProperty Name="uid_to" ColumnName="uid_to" />
-                <ScalarProperty Name="msg" ColumnName="msg" />
-                <ScalarProperty Name="time" ColumnName="time" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <AssociationSetMapping Name="Friendship" TypeName="ChatDBModel.Friendship" StoreEntitySet="Friendship">
+          <AssociationSetMapping Name="Contacts" TypeName="ChatDBModel.Contacts" StoreEntitySet="Contacts">
             <EndProperty Name="Account">
               <ScalarProperty Name="id" ColumnName="uid_from" />
             </EndProperty>
