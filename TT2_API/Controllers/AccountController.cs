@@ -95,7 +95,7 @@ namespace TT2_API.Controllers
                 System.Web.Hosting.HostingEnvironment.MapPath("~/Views/Shared/RegisterEmailTemplate.html"));
             //宣告Email驗證用的Url
             string baseUrl = Request.RequestUri.GetLeftPart(UriPartial.Authority);
-            string[] paths = { "api", "account", acc.id.ToString(), acc.PermanentAccount.auth_code };
+            string[] paths = { "api", "account", "verify", acc.id.ToString(), acc.PermanentAccount.auth_code };
             UriBuilder ValidateUrl = new UriBuilder(baseUrl) { Path = Path.Combine(paths) };
             //藉由Service將使用者資料填入驗證信範本中
             string MailBody =
@@ -189,9 +189,36 @@ namespace TT2_API.Controllers
         }
 
 
+        //GET api/account/{uid}/{authcode}
+        //電子郵件驗證
+        [HttpGet]
+        [Route("verify/{id:int}/{authCode}")]
+        public string Verify(int id, string authCode)
+        {
+            var r = db.Account.Find(id);
+            if (r != null)
+            {
+                if (r.PermanentAccount.auth_code == null || r.PermanentAccount.auth_code.Trim() == "")
+                {
+                    return "已經驗證";
+                }
+                else if (r.PermanentAccount.auth_code == authCode)
+                {
+                    r.PermanentAccount.auth_code = "";
+                    db.SaveChanges();
+                    return "驗證成功";
+                }
+                else
+                {
+                    return "驗證失敗";
+                }
+            }
+            return "尚未註冊";
+        }
 
 
         //GET api/account/test
+        //測試權杖是否有效
         [HttpGet]
         [JwtAuth]
         [Route("test")]
