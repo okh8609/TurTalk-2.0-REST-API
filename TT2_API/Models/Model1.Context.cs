@@ -13,10 +13,10 @@ namespace TT2_API.Models
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class ChatDBEntities1 : DbContext
+    public partial class ChatDBEntities : DbContext
     {
-        public ChatDBEntities1()
-            : base("name=ChatDBEntities1")
+        public ChatDBEntities()
+            : base("name=ChatDBEntities")
         {
         }
     
@@ -28,6 +28,7 @@ namespace TT2_API.Models
         public virtual DbSet<Account> Account { get; set; }
         public virtual DbSet<ChatMsg> ChatMsg { get; set; }
         public virtual DbSet<ChatMsg_TimeLimited> ChatMsg_TimeLimited { get; set; }
+        public virtual DbSet<Contacts> Contacts { get; set; }
         public virtual DbSet<PermanentAccount> PermanentAccount { get; set; }
         public virtual DbSet<TemporaryAccount> TemporaryAccount { get; set; }
     }

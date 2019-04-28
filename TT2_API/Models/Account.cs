@@ -21,8 +21,8 @@ namespace TT2_API.Models
             this.ChatMsg1 = new HashSet<ChatMsg>();
             this.ChatMsg_TimeLimited = new HashSet<ChatMsg_TimeLimited>();
             this.ChatMsg_TimeLimited1 = new HashSet<ChatMsg_TimeLimited>();
-            this.Account1 = new HashSet<Account>();
-            this.Account2 = new HashSet<Account>();
+            this.Contacts = new HashSet<Contacts>();
+            this.Contacts1 = new HashSet<Contacts>();
         }
     
         public int id { get; set; }
@@ -32,15 +32,15 @@ namespace TT2_API.Models
         public virtual ICollection<ChatMsg> ChatMsg { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ChatMsg> ChatMsg1 { get; set; }
-        public virtual PermanentAccount PermanentAccount { get; set; }
-        public virtual TemporaryAccount TemporaryAccount { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ChatMsg_TimeLimited> ChatMsg_TimeLimited { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ChatMsg_TimeLimited> ChatMsg_TimeLimited1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Account> Account1 { get; set; }
+        public virtual ICollection<Contacts> Contacts { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Account> Account2 { get; set; }
+        public virtual ICollection<Contacts> Contacts1 { get; set; }
+        public virtual PermanentAccount PermanentAccount { get; set; }
+        public virtual TemporaryAccount TemporaryAccount { get; set; }
     }
 }

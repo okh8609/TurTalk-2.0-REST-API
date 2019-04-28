@@ -8,7 +8,6 @@ using TT2_API.Models;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web;
-using MyForum.Services;
 using System.IO;
 using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
@@ -38,7 +37,7 @@ namespace TT2_API.Controllers
     [RoutePrefix("api/account")]
     public class AccountController : ApiController
     {
-        private ChatDBEntities1 db = new ChatDBEntities1();
+        private ChatDBEntities db = new ChatDBEntities();
         private MailService mailService = new MailService();
 
         // POST api/account/reg
@@ -192,10 +191,10 @@ namespace TT2_API.Controllers
         //GET api/account/{uid}/{authcode}
         //電子郵件驗證
         [HttpGet]
-        [Route("verify/{id:int}/{authCode}")]
-        public string Verify(int id, string authCode)
+        [Route("verify/{uid:int}/{authCode}")]
+        public string Verify(int uid, string authCode)
         {
-            var r = db.Account.Find(id);
+            var r = db.Account.Find(uid);
             if (r != null)
             {
                 if (r.PermanentAccount.auth_code == null || r.PermanentAccount.auth_code.Trim() == "")
@@ -233,6 +232,10 @@ namespace TT2_API.Controllers
                 Payload = new string[] { "有提供存取權杖!!", "有提供存取權杖~~" }
             };
         }
+
+
+
+        //缺登出API
 
         //缺修改帳戶資料的API
         //POST /api/account/change/picture/{id}/{pict_path}

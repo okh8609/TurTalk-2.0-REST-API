@@ -7,9 +7,8 @@ using System.Web.Http;
 
 namespace TT2_API.Controllers
 {
-    public class ChatNormalController : ApiController
+    public class InvitationController : ApiController
     {
-        //POST /api/chat/receive/
-        //POST /api/chat/send/
+        //POST /api/invite
     }
 }

@@ -5,7 +5,7 @@ using System.Web;
 using System.Net.Mail;
 
 
-namespace MyForum.Services
+namespace TT2_API.Services
 {
     public class MailService
     {

@@ -9,5 +9,7 @@ namespace TT2_API.Controllers
 {
     public class ChatTimeLimitedController : ApiController
     {
+        //POST /api/chat2/receive/
+        //POST /api/chat2/send/
     }
 }
