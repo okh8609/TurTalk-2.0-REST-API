@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="ChatDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="ChatDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Account">
           <Key>
             <PropertyRef Name="id" />
@@ -41,7 +41,7 @@
           <Property Name="picture_path" Type="varchar" MaxLength="200" />
           <Property Name="ipv4" Type="varchar" MaxLength="15" />
           <Property Name="is_admin" Type="bit" Nullable="false" />
-          <Property Name="auth_code" Type="nchar" MaxLength="20" Nullable="false" />
+          <Property Name="auth_code" Type="nchar" MaxLength="20" />
         </EntityType>
         <EntityType Name="TemporaryAccount">
           <Key>
@@ -199,8 +199,7 @@
             <End Role="TimeLimitedChatMsg" EntitySet="TimeLimitedChatMsg" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="ChatDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -242,7 +241,7 @@
           <Property Name="picture_path" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
           <Property Name="ipv4" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
           <Property Name="is_admin" Type="Boolean" Nullable="false" />
-          <Property Name="auth_code" Type="String" MaxLength="20" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="auth_code" Type="String" MaxLength="20" FixedLength="true" Unicode="true" />
           <NavigationProperty Name="Account" Relationship="Self.FK_PermanentAccount_Account" FromRole="PermanentAccount" ToRole="Account" />
         </EntityType>
         <EntityType Name="TemporaryAccount">

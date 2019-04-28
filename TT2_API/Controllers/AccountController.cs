@@ -21,8 +21,14 @@ namespace TT2_API.Controllers
         //public HttpPostedFileBase picture_path_client { get; set; }
     }
 
+    public class AccountLoginData
+    {
+        public string email { get; set; }
+        public string password { get; set; }
+    }
 
     //API
+    [Authorize]
     [RoutePrefix("api/account")]
     public class AccountController : ApiController
     {
@@ -32,27 +38,45 @@ namespace TT2_API.Controllers
         // POST api/account/reg
         [HttpPost]
         [Route("reg")]
+        [AllowAnonymous]
         public bool Register([FromBody]AccountRegData regData)
         {
+            //宣告新的使用者
+            Account acc = null;
+
             //先檢查信箱是否註冊過
-            if (AccountCheck(regData.email))
-                return false;
+            var r = db.PermanentAccount.Where(a => a.email == regData.email).ToList();
 
             //建立新的使用者
-            Account newAccount = new Account();
-            newAccount.type = "p";
-            newAccount.PermanentAccount = new PermanentAccount();
-            newAccount.PermanentAccount.email = regData.email;
-            newAccount.PermanentAccount.password = HashPassword(regData.password); //將密碼Hash過
-            newAccount.PermanentAccount.name = regData.name;
-            newAccount.PermanentAccount.picture_path = null; //照片上傳還沒做
-            newAccount.PermanentAccount.ipv4 = System.Web.HttpContext.Current.Request.UserHostAddress;
-            newAccount.PermanentAccount.is_admin = false; //預設皆不為管理員
-            newAccount.PermanentAccount.auth_code = mailService.GetValidateCode();
+            if (r.Count == 0) //未註冊過
+            {
+                acc = new Account();
+                acc.PermanentAccount = new PermanentAccount();
+            }
+            else if (r[0].auth_code == null || r[0].auth_code.Trim() == "") //註冊過，已驗證過
+            {
+                return false; //信箱重複，拒絕註冊
+            }
+            else
+            {
+                acc = r[0].Account;
+            }
+
+            acc.type = "p";
+            acc.PermanentAccount.email = regData.email;
+            acc.PermanentAccount.password = HashPassword(regData.password); //將密碼Hash過
+            acc.PermanentAccount.name = regData.name;
+            acc.PermanentAccount.picture_path = null; //照片上傳還沒做
+            acc.PermanentAccount.ipv4 = System.Web.HttpContext.Current.Request.UserHostAddress;
+            acc.PermanentAccount.is_admin = false; //預設皆不為管理員
+            acc.PermanentAccount.auth_code = mailService.GetValidateCode();
             try
             {
                 //db.PermanentAccount.Add(newAccount.PermanentAccount);
-                db.Account.Add(newAccount);
+
+                if (r.Count == 0) //未註冊過，才須新增（否則就只是修改而已）
+                    db.Account.Add(acc);
+
                 db.SaveChanges();
             }
             catch
@@ -66,22 +90,28 @@ namespace TT2_API.Controllers
                 System.Web.Hosting.HostingEnvironment.MapPath("~/Views/Shared/RegisterEmailTemplate.html"));
             //宣告Email驗證用的Url
             string baseUrl = Request.RequestUri.GetLeftPart(UriPartial.Authority);
-            string[] paths = { "api", "account", newAccount.id.ToString(), newAccount.PermanentAccount.auth_code };
+            string[] paths = { "api", "account", acc.id.ToString(), acc.PermanentAccount.auth_code };
             UriBuilder ValidateUrl = new UriBuilder(baseUrl) { Path = Path.Combine(paths) };
             //藉由Service將使用者資料填入驗證信範本中
             string MailBody =
                 mailService.GetRegisterMailBody(TempMail
-                    , newAccount.PermanentAccount.name
+                    , acc.PermanentAccount.name
                     , ValidateUrl.ToString().Replace("%3F", "?"));
             //呼叫Service寄出驗證信
-            mailService.SendRegisterMail(MailBody, newAccount.PermanentAccount.email);
+            mailService.SendRegisterMail(MailBody, acc.PermanentAccount.email);
 
 
             return true;
         }
 
-
-
+        // POST api/account/login
+        [HttpPost]
+        [Route("login")]
+        [AllowAnonymous]
+        public bool Login([FromBody]AccountLoginData data)
+        {
+            return true;
+        }
 
 
         #region Hash密碼
@@ -107,15 +137,7 @@ namespace TT2_API.Controllers
         }
         #endregion
 
-        #region 帳號註冊重複確認
-        public bool AccountCheck(string mail)
-        {
-            var Search = db.PermanentAccount.Where(a => a.email == mail);
-            return Search.Count() != 0; //true代表已經註冊過
-        }
-        #endregion
-
-        // GET api/values
+        // GET api/account/values
         public IEnumerable<string> Get()
         {
             return new string[] { "value1", "value2" };
