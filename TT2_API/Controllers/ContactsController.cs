@@ -16,7 +16,7 @@ namespace TT2_API.Controllers
         public string email;
     }
 
-    //此Controller在管理跟帳戶有關的資訊
+    //此Controller在管理跟聯絡人有關的資訊
     [RoutePrefix("api/contacts")]
     public class ContactsController : ApiController
     {
