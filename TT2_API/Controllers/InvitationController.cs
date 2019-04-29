@@ -25,9 +25,27 @@ namespace TT2_API.Controllers
         public string pwd { get; set; }
     }
 
+    public class TempMsgData1
+    {
+        public int uid { get; set; } //Recipient UID
+        public string message { get; set; }
+    }
+
+    public class TempMsgData2
+    {
+        public DateTime start { get; set; } //取出從什麼時候開始的資料（在app端應該會記錄著上次存取的時間(要從DB獲得，才會一致)）
+        public int uid { get; set; }
+    }
+
+    public class TempMsgData3
+    {
+        public DateTime time { get; set; } //每則訊息的時間，原則上將上述之最後存取時間設為最後一筆資料的時間
+        public string message { get; set; }
+    }
+
 
     //處理及時邀請功能的API
-    //這個算是體驗功能，為避免被濫用，帳號有效時間為6分鐘
+    //這個算是體驗功能，為避免被濫用，帳號有效時間為10分鐘
     //超過即無法在存取任何內容
     //但其對話紀錄仍會保存於資料庫
     //會產生一組臨時的uid和pwd
@@ -136,8 +154,45 @@ namespace TT2_API.Controllers
         #endregion
 
         #region 聊天部分
-        //聊天訊息
+        //POST /api/invite/send
+        [HttpPost]
+        [JwtAuth]
+        [Route("send")]
+        public bool Send([FromBody]TempMsgData1 data)
+        {
+            int myUid = int.Parse((Request.Properties["user"] as string));
 
+            ChatMsg_Invitation c = new ChatMsg_Invitation();
+            c.uid_from = myUid;
+            c.uid_to = data.uid;
+            c.msg = data.message;
+            c.time = DateTime.UtcNow;
+            try
+            {
+                db.ChatMsg_Invitation.Add(c);
+                db.SaveChanges();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        //POST /api/invite/receive
+        [HttpPost]
+        [JwtAuth]
+        [Route("receive")]
+        public IEnumerable<TempMsgData3> Receive([FromBody] TempMsgData2 data)
+        {
+            int myUid = int.Parse((Request.Properties["user"] as string));
+
+            var r = db.ChatMsg_Invitation.Where(a => (a.uid_from == data.uid) && (a.uid_to == myUid)//把「給我的」訊息都撈出來
+                                                        && (DateTime.Compare(a.time, data.start) >= 0))
+                                                        .OrderBy(a => a.time)
+                                                        .Select(a => new TempMsgData3 { time = a.time, message = a.msg });
+            return r;
+        }
         #endregion
 
 
