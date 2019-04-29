@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Web.Http;
 using TT2_API.Filters;
 using TT2_API.Models;
+using System.Data.Entity;
 
 namespace TT2_API.Controllers
 {
@@ -46,7 +47,7 @@ namespace TT2_API.Controllers
             c.uid_from = myUid;
             c.uid_to = data.uid;
             c.msg = data.message;
-            c.time = DateTime.Now;
+            c.time = DateTime.UtcNow;
             c.eff_period = data.eff_period;
             try
             {
@@ -68,10 +69,10 @@ namespace TT2_API.Controllers
         {
             int myUid = int.Parse((Request.Properties["user"] as string));
 
-            var r = db.ChatMsg.Where(a => (a.uid_from == data.uid) && (a.uid_to == myUid)//把「給我的」訊息都撈出來
-                                            && (DateTime.Compare(a.time, data.start) >= 0))
-                                            .OrderBy(a => a.time)
-                                            .Select(a => new ChatMsgData3 { time = a.time, message = a.msg });
+            var r = db.ChatMsg_TimeLimited.Where(a => (a.uid_from == data.uid) && (a.uid_to == myUid)//把「給我的」訊息都撈出來
+                                                        && (DateTime.Compare(a.time, data.start) >= 0))
+                                                        .OrderBy(a => a.time)
+                                                        .Select(a => new ChatMsgData3 { time = a.time, message = a.msg });
             return r;
         }
 
@@ -85,10 +86,30 @@ namespace TT2_API.Controllers
         {
             try
             {
-                var r = db.ChatMsg_TimeLimited.Where(a => (DateTime.Compare(a.time.Add(a.eff_period), DateTime.Now) < 0));
-                db.ChatMsg_TimeLimited.RemoveRange(r);
+                /*var r = db.ChatMsg_TimeLimited.Where(
+                               a => (DateTime.Compare(
+                                    (DateTime)DbFunctions.AddSeconds(a.time, (int)(a.eff_period.TotalSeconds)),
+                                    DateTime.UtcNow) < 0));*/
+
+                var r = db.ChatMsg_TimeLimited;
+                int count = 0;
+                foreach (var i in r)
+                {
+                    /*
+                    var a = i.time.Add(i.eff_period);
+                    var b = DateTime.UtcNow;
+                    var c = DateTime.UtcNow.ToLocalTime();
+                    var d = DateTime.Now; //c和d是一樣的
+                    */
+
+                    if ((DateTime.Compare(i.time.Add(i.eff_period), DateTime.UtcNow) < 0))
+                    {
+                        ++count;
+                        db.ChatMsg_TimeLimited.Remove(i);
+                    }
+                }
                 db.SaveChanges();
-                return r.Count();
+                return count;
             }
             catch (Exception)
             {

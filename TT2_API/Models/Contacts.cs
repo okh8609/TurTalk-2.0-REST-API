@@ -14,9 +14,9 @@ namespace TT2_API.Models
     
     public partial class Contacts
     {
+        public int cid { get; set; }
         public int uid_from { get; set; }
         public int uid_to { get; set; }
-        public int cid { get; set; }
     
         public virtual Account Account { get; set; }
         public virtual Account Account1 { get; set; }

@@ -46,7 +46,7 @@ namespace TT2_API.Controllers
             c.uid_from = myUid;
             c.uid_to = data.uid;
             c.msg = data.message;
-            c.time = DateTime.Now;
+            c.time = DateTime.UtcNow;
             try
             {
                 db.ChatMsg.Add(c);
