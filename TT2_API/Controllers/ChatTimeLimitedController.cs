@@ -86,10 +86,12 @@ namespace TT2_API.Controllers
         {
             try
             {
+                //會出錯的查詢
                 /*var r = db.ChatMsg_TimeLimited.Where(
                                a => (DateTime.Compare(
                                     (DateTime)DbFunctions.AddSeconds(a.time, (int)(a.eff_period.TotalSeconds)),
                                     DateTime.UtcNow) < 0));*/
+                //最後決定讓是否到期的判斷讓應用程式去做
 
                 var r = db.ChatMsg_TimeLimited;
                 int count = 0;
@@ -101,7 +103,6 @@ namespace TT2_API.Controllers
                     var c = DateTime.UtcNow.ToLocalTime();
                     var d = DateTime.Now; //c和d是一樣的
                     */
-
                     if ((DateTime.Compare(i.time.Add(i.eff_period), DateTime.UtcNow) < 0))
                     {
                         ++count;

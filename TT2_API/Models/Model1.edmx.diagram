@@ -5,12 +5,11 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="6ba27d55e8f446849eb066e2169580c1" Name="Diagram1">
-        <EntityTypeShape EntityType="ChatDBModel.Account" Width="1.5" PointX="0.75" PointY="7.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="ChatDBModel.Account" Width="1.5" PointX="0.75" PointY="7.75" IsExpanded="true" />
         <EntityTypeShape EntityType="ChatDBModel.ChatMsg" Width="1.5" PointX="3" PointY="1.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="ChatDBModel.ChatMsg_TimeLimited" Width="1.5" PointX="3" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="ChatDBModel.ChatMsg_TimeLimited" Width="1.5" PointX="3" PointY="4.875" IsExpanded="true" />
         <EntityTypeShape EntityType="ChatDBModel.Contacts" Width="1.5" PointX="3" PointY="8.25" IsExpanded="true" />
         <EntityTypeShape EntityType="ChatDBModel.PermanentAccount" Width="1.5" PointX="3" PointY="11" IsExpanded="true" />
-        <EntityTypeShape EntityType="ChatDBModel.TemporaryAccount" Width="1.5" PointX="3" PointY="14.625" IsExpanded="true" />
         <AssociationConnector Association="ChatDBModel.FK_ChatMsg_Account" ManuallyRouted="false" />
         <AssociationConnector Association="ChatDBModel.FK_ChatMsg_Account1" ManuallyRouted="false" />
         <AssociationConnector Association="ChatDBModel.FK_ChatMsg_TimeLimited_Account" ManuallyRouted="false" />
@@ -18,7 +17,12 @@
         <AssociationConnector Association="ChatDBModel.FK_Contacts_Account" ManuallyRouted="false" />
         <AssociationConnector Association="ChatDBModel.FK_Contacts_Account1" ManuallyRouted="false" />
         <AssociationConnector Association="ChatDBModel.FK_PermanentAccount_Account" ManuallyRouted="false" />
-        <AssociationConnector Association="ChatDBModel.FK_TemporaryAccount_Account" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="ChatDBModel.ChatMsg_Invitation" Width="1.5" PointX="3" PointY="14.875" />
+        <AssociationConnector Association="ChatDBModel.FK_ChatMsg_Invitation_Account" />
+        <AssociationConnector Association="ChatDBModel.FK_ChatMsg_Invitation_Account1" />
+        <EntityTypeShape EntityType="ChatDBModel.TemporaryAccount" Width="1.5" PointX="5.25" PointY="9.75" />
+        <AssociationConnector Association="ChatDBModel.FK_TemporaryAccount_Account" />
+        <AssociationConnector Association="ChatDBModel.FK_TemporaryAccount_PermanentAccount" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -23,6 +23,8 @@ namespace TT2_API.Models
             this.ChatMsg_TimeLimited1 = new HashSet<ChatMsg_TimeLimited>();
             this.Contacts = new HashSet<Contacts>();
             this.Contacts1 = new HashSet<Contacts>();
+            this.ChatMsg_Invitation = new HashSet<ChatMsg_Invitation>();
+            this.ChatMsg_Invitation1 = new HashSet<ChatMsg_Invitation>();
         }
     
         public int id { get; set; }
@@ -41,6 +43,10 @@ namespace TT2_API.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Contacts> Contacts1 { get; set; }
         public virtual PermanentAccount PermanentAccount { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ChatMsg_Invitation> ChatMsg_Invitation { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ChatMsg_Invitation> ChatMsg_Invitation1 { get; set; }
         public virtual TemporaryAccount TemporaryAccount { get; set; }
     }
 }

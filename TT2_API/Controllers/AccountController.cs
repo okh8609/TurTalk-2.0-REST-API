@@ -68,7 +68,7 @@ namespace TT2_API.Controllers
 
             acc.type = "p";
             acc.PermanentAccount.email = regData.email;
-            acc.PermanentAccount.password = HashPassword(regData.password); //將密碼Hash過
+            acc.PermanentAccount.password = MainHelper.HashPassword(regData.password); //將密碼Hash過
             acc.PermanentAccount.name = regData.name;
             acc.PermanentAccount.picture_path = null; //照片上傳還沒做
             acc.PermanentAccount.ipv4 = System.Web.HttpContext.Current.Request.UserHostAddress;
@@ -141,7 +141,7 @@ namespace TT2_API.Controllers
                         Payload = "帳號尚未通過電子郵件驗證"
                     });
                 }
-                else if (r[0].password == HashPassword(data.password))
+                else if (r[0].password == MainHelper.HashPassword(data.password))
                 {
                     // 帳號與密碼比對正確，回傳帳密比對正確
 
@@ -243,28 +243,6 @@ namespace TT2_API.Controllers
         //POST /api/account/change/name/{id}/{newname}
 
 
-        #region Hash密碼
-        private string HashPassword(string Password)
-        {
-            //加鹽
-            string salt = "AEBG4UeghhFFc7ApFaHQa593N4hwvv5f";
-            string saltAndPassword = String.Concat(salt, Password);
-
-            //SHA1
-            SHA1CryptoServiceProvider sha1Hasher = new SHA1CryptoServiceProvider();
-
-            byte[] PasswordData = Encoding.Default.GetBytes(saltAndPassword);//換成byte資料
-            byte[] HashDate = sha1Hasher.ComputeHash(PasswordData);
-
-            string Hashresult = ""; //換回string資料
-            for (int i = 0; i < HashDate.Length; i++)
-            {
-                Hashresult += HashDate[i].ToString("x2");
-            }
-
-            return Hashresult;
-        }
-        #endregion
 
         protected override void Dispose(bool disposing)
         {

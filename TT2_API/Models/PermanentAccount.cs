@@ -14,6 +14,12 @@ namespace TT2_API.Models
     
     public partial class PermanentAccount
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public PermanentAccount()
+        {
+            this.TemporaryAccount = new HashSet<TemporaryAccount>();
+        }
+    
         public int uid { get; set; }
         public string email { get; set; }
         public string password { get; set; }
@@ -24,5 +30,7 @@ namespace TT2_API.Models
         public string auth_code { get; set; }
     
         public virtual Account Account { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TemporaryAccount> TemporaryAccount { get; set; }
     }
 }

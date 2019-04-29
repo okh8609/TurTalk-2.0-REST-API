@@ -12,15 +12,15 @@ namespace TT2_API.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class TemporaryAccount
+    public partial class ChatMsg_Invitation
     {
-        public int uid { get; set; }
-        public string pwd { get; set; }
-        public int ancestor_uid { get; set; }
-        public System.DateTime reg_time { get; set; }
-        public string ipv4 { get; set; }
+        public int id { get; set; }
+        public int uid_from { get; set; }
+        public int uid_to { get; set; }
+        public string msg { get; set; }
+        public System.DateTime time { get; set; }
     
         public virtual Account Account { get; set; }
-        public virtual PermanentAccount PermanentAccount { get; set; }
+        public virtual Account Account1 { get; set; }
     }
 }

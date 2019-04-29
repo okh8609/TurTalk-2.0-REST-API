@@ -184,6 +184,9 @@
     <Compile Include="Models\ChatMsg.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ChatMsg_Invitation.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\ChatMsg_TimeLimited.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
