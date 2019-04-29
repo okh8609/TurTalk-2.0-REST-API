@@ -19,6 +19,7 @@ namespace TT2_API.Models
         public int uid_to { get; set; }
         public string msg { get; set; }
         public System.DateTime time { get; set; }
+        public System.TimeSpan eff_period { get; set; }
     
         public virtual Account Account { get; set; }
         public virtual Account Account1 { get; set; }

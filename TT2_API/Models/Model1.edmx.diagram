@@ -10,7 +10,6 @@
         <EntityTypeShape EntityType="ChatDBModel.ChatMsg_TimeLimited" Width="1.5" PointX="3" PointY="4.75" IsExpanded="true" />
         <EntityTypeShape EntityType="ChatDBModel.Contacts" Width="1.5" PointX="3" PointY="8" IsExpanded="true" />
         <EntityTypeShape EntityType="ChatDBModel.PermanentAccount" Width="1.5" PointX="3" PointY="10.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="ChatDBModel.TemporaryAccount" Width="1.5" PointX="3" PointY="14.5" IsExpanded="true" />
         <AssociationConnector Association="ChatDBModel.FK_ChatMsg_Account" ManuallyRouted="false" />
         <AssociationConnector Association="ChatDBModel.FK_ChatMsg_Account1" ManuallyRouted="false" />
         <AssociationConnector Association="ChatDBModel.FK_ChatMsg_TimeLimited_Account" ManuallyRouted="false" />
@@ -18,7 +17,8 @@
         <AssociationConnector Association="ChatDBModel.FK_Contacts_Account" ManuallyRouted="false" />
         <AssociationConnector Association="ChatDBModel.FK_Contacts_Account1" ManuallyRouted="false" />
         <AssociationConnector Association="ChatDBModel.FK_PermanentAccount_Account" ManuallyRouted="false" />
-        <AssociationConnector Association="ChatDBModel.FK_TemporaryAccount_Account" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="ChatDBModel.TemporaryAccount" Width="1.5" PointX="3" PointY="15.125" />
+        <AssociationConnector Association="ChatDBModel.FK_TemporaryAccount_Account" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

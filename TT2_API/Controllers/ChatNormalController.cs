@@ -27,7 +27,6 @@ namespace TT2_API.Controllers
         public string message { get; set; }
     }
 
-
     //此Controller在發送和接收一般的訊息
     [RoutePrefix("api/chat")]
     public class ChatNormalController : ApiController
@@ -69,7 +68,7 @@ namespace TT2_API.Controllers
             int myUid = int.Parse((Request.Properties["user"] as string));
 
             var r = db.ChatMsg.Where(a => (a.uid_from == data.uid) && (a.uid_to == myUid)//把「給我的」訊息都撈出來
-                                            && (DateTime.Compare(a.time, data.start) > 0))
+                                            && (DateTime.Compare(a.time, data.start) >= 0))
                                             .OrderBy(a => a.time)
                                             .Select(a => new ChatMsgData3 { time = a.time, message = a.msg });
             return r;

@@ -18,7 +18,6 @@ namespace TT2_API.Models
         public int inv_uid { get; set; }
         public string inv_pwd { get; set; }
         public string ipv4 { get; set; }
-        public System.TimeSpan eff_period { get; set; }
     
         public virtual Account Account { get; set; }
     }

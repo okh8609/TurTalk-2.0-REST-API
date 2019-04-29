@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="ChatDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="ChatDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Account">
           <Key>
             <PropertyRef Name="id" />
@@ -31,14 +31,15 @@
           <Property Name="uid_to" Type="int" Nullable="false" />
           <Property Name="msg" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="time" Type="datetime" Nullable="false" />
+          <Property Name="eff_period" Type="time" Precision="2" Nullable="false" />
         </EntityType>
         <EntityType Name="Contacts">
           <Key>
             <PropertyRef Name="cid" />
           </Key>
+          <Property Name="cid" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="uid_from" Type="int" Nullable="false" />
           <Property Name="uid_to" Type="int" Nullable="false" />
-          <Property Name="cid" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
         </EntityType>
         <EntityType Name="PermanentAccount">
           <Key>
@@ -61,7 +62,6 @@
           <Property Name="inv_uid" Type="int" Nullable="false" />
           <Property Name="inv_pwd" Type="varchar" MaxLength="5" Nullable="false" />
           <Property Name="ipv4" Type="varchar" MaxLength="15" />
-          <Property Name="eff_period" Type="time" Precision="2" Nullable="false" />
         </EntityType>
         <Association Name="FK_ChatMsg_Account">
           <End Role="Account" Type="Self.Account" Multiplicity="1" />
@@ -199,8 +199,7 @@
             <End Role="TemporaryAccount" EntitySet="TemporaryAccount" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="ChatDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -217,7 +216,7 @@
           <NavigationProperty Name="Contacts" Relationship="Self.FK_Contacts_Account" FromRole="Account" ToRole="Contacts" />
           <NavigationProperty Name="Contacts1" Relationship="Self.FK_Contacts_Account1" FromRole="Account" ToRole="Contacts" />
           <NavigationProperty Name="PermanentAccount" Relationship="Self.FK_PermanentAccount_Account" FromRole="Account" ToRole="PermanentAccount" />
-          <NavigationProperty Name="TemporaryAccount" Relationship="Self.FK_TemporaryAccount_Account" FromRole="Account" ToRole="TemporaryAccount" />
+          <NavigationProperty Name="TemporaryAccount" Relationship="ChatDBModel.FK_TemporaryAccount_Account" FromRole="Account" ToRole="TemporaryAccount" />
         </EntityType>
         <EntityType Name="ChatMsg">
           <Key>
@@ -242,6 +241,7 @@
           <Property Name="time" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="Account" Relationship="Self.FK_ChatMsg_TimeLimited_Account" FromRole="ChatMsg_TimeLimited" ToRole="Account" />
           <NavigationProperty Name="Account1" Relationship="Self.FK_ChatMsg_TimeLimited_Account1" FromRole="ChatMsg_TimeLimited" ToRole="Account" />
+          <Property Name="eff_period" Type="Time" Nullable="false" Precision="2" />
         </EntityType>
         <EntityType Name="Contacts">
           <Key>
@@ -266,17 +266,6 @@
           <Property Name="is_admin" Type="Boolean" Nullable="false" />
           <Property Name="auth_code" Type="String" MaxLength="20" FixedLength="true" Unicode="true" />
           <NavigationProperty Name="Account" Relationship="Self.FK_PermanentAccount_Account" FromRole="PermanentAccount" ToRole="Account" />
-        </EntityType>
-        <EntityType Name="TemporaryAccount">
-          <Key>
-            <PropertyRef Name="uid" />
-          </Key>
-          <Property Name="uid" Type="Int32" Nullable="false" />
-          <Property Name="inv_uid" Type="Int32" Nullable="false" />
-          <Property Name="inv_pwd" Type="String" MaxLength="5" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="ipv4" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
-          <Property Name="eff_period" Type="Time" Nullable="false" Precision="2" />
-          <NavigationProperty Name="Account" Relationship="Self.FK_TemporaryAccount_Account" FromRole="TemporaryAccount" ToRole="Account" />
         </EntityType>
         <Association Name="FK_ChatMsg_Account">
           <End Role="Account" Type="Self.Account" Multiplicity="1" />
@@ -362,25 +351,12 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_TemporaryAccount_Account">
-          <End Role="Account" Type="Self.Account" Multiplicity="1" />
-          <End Role="TemporaryAccount" Type="Self.TemporaryAccount" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="Account">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="TemporaryAccount">
-              <PropertyRef Name="uid" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityContainer Name="ChatDBEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Account" EntityType="Self.Account" />
           <EntitySet Name="ChatMsg" EntityType="Self.ChatMsg" />
           <EntitySet Name="ChatMsg_TimeLimited" EntityType="Self.ChatMsg_TimeLimited" />
           <EntitySet Name="Contacts" EntityType="Self.Contacts" />
           <EntitySet Name="PermanentAccount" EntityType="Self.PermanentAccount" />
-          <EntitySet Name="TemporaryAccount" EntityType="Self.TemporaryAccount" />
           <AssociationSet Name="FK_ChatMsg_Account" Association="Self.FK_ChatMsg_Account">
             <End Role="Account" EntitySet="Account" />
             <End Role="ChatMsg" EntitySet="ChatMsg" />
@@ -409,11 +385,34 @@
             <End Role="Account" EntitySet="Account" />
             <End Role="PermanentAccount" EntitySet="PermanentAccount" />
           </AssociationSet>
-          <AssociationSet Name="FK_TemporaryAccount_Account" Association="Self.FK_TemporaryAccount_Account">
+          <EntitySet Name="TemporaryAccount" EntityType="ChatDBModel.TemporaryAccount" />
+          <AssociationSet Name="FK_TemporaryAccount_Account" Association="ChatDBModel.FK_TemporaryAccount_Account">
             <End Role="Account" EntitySet="Account" />
             <End Role="TemporaryAccount" EntitySet="TemporaryAccount" />
           </AssociationSet>
         </EntityContainer>
+        <EntityType Name="TemporaryAccount">
+          <Key>
+            <PropertyRef Name="uid" />
+          </Key>
+          <Property Name="uid" Type="Int32" Nullable="false" />
+          <Property Name="inv_uid" Type="Int32" Nullable="false" />
+          <Property Name="inv_pwd" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="false" />
+          <Property Name="ipv4" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Account" Relationship="ChatDBModel.FK_TemporaryAccount_Account" FromRole="TemporaryAccount" ToRole="Account" />
+        </EntityType>
+        <Association Name="FK_TemporaryAccount_Account">
+          <End Type="ChatDBModel.Account" Role="Account" Multiplicity="1" />
+          <End Type="ChatDBModel.TemporaryAccount" Role="TemporaryAccount" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="TemporaryAccount">
+              <PropertyRef Name="uid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -442,6 +441,7 @@
           <EntitySetMapping Name="ChatMsg_TimeLimited">
             <EntityTypeMapping TypeName="ChatDBModel.ChatMsg_TimeLimited">
               <MappingFragment StoreEntitySet="ChatMsg_TimeLimited">
+                <ScalarProperty Name="eff_period" ColumnName="eff_period" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="uid_from" ColumnName="uid_from" />
                 <ScalarProperty Name="uid_to" ColumnName="uid_to" />
@@ -476,11 +476,10 @@
           <EntitySetMapping Name="TemporaryAccount">
             <EntityTypeMapping TypeName="ChatDBModel.TemporaryAccount">
               <MappingFragment StoreEntitySet="TemporaryAccount">
-                <ScalarProperty Name="uid" ColumnName="uid" />
-                <ScalarProperty Name="inv_uid" ColumnName="inv_uid" />
-                <ScalarProperty Name="inv_pwd" ColumnName="inv_pwd" />
                 <ScalarProperty Name="ipv4" ColumnName="ipv4" />
-                <ScalarProperty Name="eff_period" ColumnName="eff_period" />
+                <ScalarProperty Name="inv_pwd" ColumnName="inv_pwd" />
+                <ScalarProperty Name="inv_uid" ColumnName="inv_uid" />
+                <ScalarProperty Name="uid" ColumnName="uid" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
