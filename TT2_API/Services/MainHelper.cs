@@ -27,7 +27,7 @@ namespace TT2_API.Services
 
             Random rd = new Random();
 
-            for (int i = 0; i != 8; ++i)
+            for (int i = 0; i != len; ++i)
                 str += Code[rd.Next(Code.Count())];
 
             return str;

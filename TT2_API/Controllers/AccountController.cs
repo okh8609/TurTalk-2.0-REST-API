@@ -195,13 +195,14 @@ namespace TT2_API.Controllers
         public string Verify(int uid, string authCode)
         {
             var r = db.Account.Find(uid);
+
             if (r != null)
             {
                 if (r.PermanentAccount.auth_code == null || r.PermanentAccount.auth_code.Trim() == "")
                 {
                     return "已經驗證";
                 }
-                else if (r.PermanentAccount.auth_code == authCode)
+                else if (r.PermanentAccount.auth_code.Trim() == authCode)
                 {
                     r.PermanentAccount.auth_code = "";
                     db.SaveChanges();
