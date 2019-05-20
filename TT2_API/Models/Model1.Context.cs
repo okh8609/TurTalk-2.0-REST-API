@@ -27,10 +27,10 @@ namespace TT2_API.Models
     
         public virtual DbSet<Account> Account { get; set; }
         public virtual DbSet<ChatMsg> ChatMsg { get; set; }
+        public virtual DbSet<ChatMsg_Invitation> ChatMsg_Invitation { get; set; }
         public virtual DbSet<ChatMsg_TimeLimited> ChatMsg_TimeLimited { get; set; }
         public virtual DbSet<Contacts> Contacts { get; set; }
         public virtual DbSet<PermanentAccount> PermanentAccount { get; set; }
-        public virtual DbSet<ChatMsg_Invitation> ChatMsg_Invitation { get; set; }
         public virtual DbSet<TemporaryAccount> TemporaryAccount { get; set; }
     }
 }
