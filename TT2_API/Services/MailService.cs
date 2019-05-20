@@ -10,7 +10,8 @@ namespace TT2_API.Services
     public class MailService
     {
         private string gmail_account = "turtalk1111@gmail.com"; //Gmail帳號
-        private string gmail_password = "Zxcv*963"; //Gmail密碼
+        private string gmail_password = "Asdf789+"; //Gmail密碼
+        //private string gmail_password = "cwxfqaniotcoftew"; //Gmail密碼
         private string gmail_mail = "turtalk1111@gmail.com"; //Gmail信箱
 
         #region 寄會員驗證信
@@ -34,9 +35,9 @@ namespace TT2_API.Services
         {
             //建立寄信用Smtp物件
             SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
-            SmtpServer.Port = 587; 
+            SmtpServer.Port = 25;//587; 
             SmtpServer.Credentials = new System.Net.NetworkCredential(gmail_account, gmail_password);
-            SmtpServer.EnableSsl = true; //開啟SSL 
+            SmtpServer.EnableSsl = true; //開啟SSL            
 
             //信件
             MailMessage mail = new MailMessage(); 
