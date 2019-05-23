@@ -133,6 +133,25 @@ namespace TT2_API.Controllers
             }
         }
 
+        //列出所有使用者清單的API
+        //GET /api/contacts/alluser/
+        [HttpGet]
+        [JwtAuth]
+        [Route("alluser")]
+        public IEnumerable<ContactsData> GetAllUser()
+        {
+            try
+            {
+                var result = from t in db.PermanentAccount
+                             select new ContactsData { uid = t.uid, name = t.name, email = t.email };
+                return result;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();
