@@ -33,6 +33,20 @@ namespace TT2_API.Controllers
         public string password { get; set; }
     }
 
+    public class ChangePasswdData
+    {
+        public string oldPasswd;
+        public string newPasswd;
+    }
+
+    public class ProfileData
+    {
+        public int uid;
+        public string email;
+        public string name;
+        public string auth_code;
+    }
+
     //此Controller在管理跟帳戶有關的資訊
     [RoutePrefix("api/account")]
     public class AccountController : ApiController
@@ -234,14 +248,91 @@ namespace TT2_API.Controllers
             };
         }
 
+        //GET api/account/profile
+        //取得個人檔案
+        [HttpGet]
+        [JwtAuth]
+        [Route("profile")]
+        public ProfileData GetProfile()
+        {
+            int myUID = int.Parse((Request.Properties["user"] as string));
 
+            var r = db.PermanentAccount.Find(myUID);
+
+            ProfileData a = new ProfileData();
+            a.uid = r.uid;
+            a.email = r.email;
+            a.name = r.name;
+            a.auth_code = r.auth_code;
+
+            return a;
+        }
+
+        //POST /api/account/change/password/{oldPasswd}/{newPasswd}
+        //修改密碼
+        [HttpPost]
+        [JwtAuth]
+        [Route("change/passwd")]
+        public bool ChangePasswd([FromBody]ChangePasswdData data)
+        {
+            int myUID = int.Parse((Request.Properties["user"] as string));
+
+            var r = db.PermanentAccount.Find(myUID);
+
+            if (r.password == MainHelper.HashPassword(data.oldPasswd))
+            {
+                r.password = MainHelper.HashPassword(data.newPasswd);
+                try
+                {
+                    db.SaveChanges();
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
+        //POST /api/account/change/name/{newname}
+        //修改帳戶名稱
+        [HttpPost]
+        [JwtAuth]
+        [Route("change/name")]
+        public bool ChangePasswd([FromBody]string newName)
+        {
+            if (newName == null)
+                return false;
+
+            int myUID = int.Parse((Request.Properties["user"] as string));
+
+            var r = db.PermanentAccount.Find(myUID);
+
+            r.name = newName;
+
+            try
+            {
+                db.SaveChanges();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        //缺修改帳戶資料的API
+        //POST /api/account/change/picture/{pict_path}
 
         //缺登出API
 
-        //缺修改帳戶資料的API
-        //POST /api/account/change/picture/{id}/{pict_path}
-        //POST /api/account/change/password/{id}/{newpassword}
-        //POST /api/account/change/name/{id}/{newname}
+
+
 
 
 

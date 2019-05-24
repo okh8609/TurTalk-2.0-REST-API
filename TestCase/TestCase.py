@@ -15,25 +15,25 @@ response = requests.post(url, data='5555', headers=headers)
 print(response.text)
 
 
-# In[115]:
+# In[29]:
 
 
-# baseURL = 'http://localhost:49982/'
+baseURL = 'http://localhost:49982/'
 
 
-# In[102]:
+# In[ ]:
 
 
 # baseURL = 'https://tt2api.azurewebsites.net/'
 
 
-# In[5]:
+# In[24]:
 
 
 baseURL = 'https://turtalk2api.azurewebsites.net/'
 
 
-# In[28]:
+# In[2]:
 
 
 #測試註冊
@@ -49,7 +49,7 @@ response = requests.post(url, data=data_json, headers=headers)
 print(response.text)
 
 
-# In[31]:
+# In[35]:
 
 
 #測試登入
@@ -58,7 +58,7 @@ import json
 url = baseURL + 'api/account/login'
 headers = {'Content-type': 'application/json'}
 
-data = { 'email' : "okh8609@gmail.com" , 'password' : '1234567880'}
+data = { 'email' : "okh8609@gmail.com" , 'password' : '123456789'}
 data_json = json.dumps(data)
 
 response = requests.post(url, data=data_json, headers=headers)
@@ -69,7 +69,7 @@ key = json.loads(response.text)["Payload"]
 print(key)
 
 
-# In[30]:
+# In[ ]:
 
 
 #測試權限
@@ -84,7 +84,57 @@ response = requests.get(url, headers = hhh)
 print(response.text)
 
 
-# In[9]:
+# In[46]:
+
+
+#測試取得profile
+import requests
+import json
+
+url = baseURL + 'api/account/profile'
+
+headers = {'Authorization': ('Bearer '+ key).encode('utf-8')}
+
+response = requests.get(url, headers=headers)
+print(response.text)
+
+
+# In[32]:
+
+
+#測試修改密碼
+import requests
+import json
+
+url = baseURL + 'api/account/change/passwd'
+
+headers = {'Authorization': ('Bearer '+ key).encode('utf-8'),
+           'Content-type': 'application/json'}
+
+data = { 'oldPasswd' : "123456788" , 'newPasswd' : '123456789'}
+data_json = json.dumps(data)
+
+response = requests.post(url, data=data_json, headers=headers)
+print(response.text)
+
+
+# In[45]:
+
+
+#測試修改 name
+import requests
+import json
+
+url = baseURL + 'api/account/change/name'
+
+headers = {'Authorization': ('Bearer '+ key).encode('utf-8'),
+           'Content-type': 'application/json'}
+
+response = requests.post(url, data="\"new.Kaihao\"", headers=headers)
+print(response.text)
+
+
+# In[20]:
 
 
 #測試加入聯絡人
@@ -92,16 +142,14 @@ print(response.text)
 import requests
 import json
 url = baseURL + 'api/contacts/add'
-headers = {'Authorization': ('Bearer '+ key).encode('utf-8'), 'Content-type': 'application/json'}
+headers = {'Authorization': ('Bearer '+ key).encode('utf-8'),
+           'Content-type': 'application/json'}
 
-data = { 'uid' : 14}
-data_json = json.dumps(data)
-
-response = requests.post(url, data='14', headers = headers)
+response = requests.post(url, data='12', headers = headers)
 print(response.text)
 
 
-# In[10]:
+# In[9]:
 
 
 #測試刪除聯絡人
@@ -109,10 +157,11 @@ print(response.text)
 import requests
 import json
 url = baseURL + 'api/contacts/del'
-headers = {'Authorization': ('Bearer '+ key).encode('utf-8'), 'Content-type': 'application/json'}
+headers = {'Authorization': ('Bearer '+ key).encode('utf-8'),
+           'Content-type': 'application/json'}
 
 
-response = requests.post(url, data='14', headers = headers)
+response = requests.post(url, data='20', headers = headers)
 print(response.text)
 
 
@@ -124,27 +173,43 @@ print(response.text)
 import requests
 import json
 url = baseURL + 'api/contacts/list'
+headers = {'Authorization': ('Bearer '+ key).encode('utf-8'),
+           'Content-type': 'application/json'}
+
+response = requests.get(url, headers = headers)
+print(response.text)
+
+
+# In[23]:
+
+
+#列出所有使用者
+
+import requests
+import json
+url = baseURL + 'api/contacts/alluser'
 headers = {'Authorization': ('Bearer '+ key).encode('utf-8'), 'Content-type': 'application/json'}
 
 response = requests.get(url, headers = headers)
 print(response.text)
 
 
-# In[12]:
+# In[28]:
 
 
 #搜尋使用者
 
 import requests
 import json
-url = baseURL + 'api/contacts/search/1'
+keyword = 'kaih'
+url = baseURL + 'api/contacts/search/' + keyword
 headers = {'Authorization': ('Bearer '+ key).encode('utf-8'), 'Content-type': 'application/json'}
 
 response = requests.get(url, headers = headers)
 print(response.text)
 
 
-# In[18]:
+# In[ ]:
 
 
 #送出聊天訊息
@@ -161,7 +226,7 @@ response = requests.post(url, data=data_json, headers=headers)
 print(response.text)
 
 
-# In[19]:
+# In[ ]:
 
 
 #接收聊天訊息
@@ -178,7 +243,7 @@ response = requests.post(url, data=data_json, headers=headers)
 print(response.text)
 
 
-# In[21]:
+# In[ ]:
 
 
 #送出限時聊天訊息
@@ -200,7 +265,7 @@ response = requests.post(url, data=data_json, headers=headers)
 print(response.text)
 
 
-# In[22]:
+# In[ ]:
 
 
 #接收限時聊天訊息
@@ -217,7 +282,7 @@ response = requests.post(url, data=data_json, headers=headers)
 print(response.text)
 
 
-# In[23]:
+# In[ ]:
 
 
 # 清除過期的聊天訊息
@@ -233,7 +298,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 
 
-# In[24]:
+# In[ ]:
 
 
 #測試獲得臨時帳號
@@ -251,7 +316,7 @@ uuu = json.loads(response.text)["uid"]
 ppp = json.loads(response.text)["pwd"]
 
 
-# In[25]:
+# In[ ]:
 
 
 #測試登入
@@ -268,7 +333,7 @@ print(response.text)
 key = json.loads(response.text)["Payload"]
 
 
-# In[26]:
+# In[ ]:
 
 
 #測試權限2
