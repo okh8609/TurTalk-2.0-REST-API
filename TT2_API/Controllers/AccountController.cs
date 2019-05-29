@@ -326,6 +326,15 @@ namespace TT2_API.Controllers
             }
         }
 
+        //GET api/account/password/{pwd}
+        //電子郵件驗證
+        [HttpGet]
+        [Route("password/{pwd}")]
+        public string HashPassword(string pwd)
+        {
+            return MainHelper.HashPassword(pwd);
+        }
+
         //缺修改帳戶資料的API
         //POST /api/account/change/picture/{pict_path}
 
