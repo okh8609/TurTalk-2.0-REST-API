@@ -19,14 +19,19 @@ namespace TT2_API.Controllers
 
     public class ChatMsgData2_TimeLimited
     {
-        public DateTime start { get; set; } //取出從什麼時候開始的資料（在app端應該會記錄著上次存取的時間(要從DB獲得，才會一致)）
         public int uid { get; set; } //送出者的UID
     }
 
     public class ChatMsgData3_TimeLimited
     {
-        public DateTime time { get; set; } //每則訊息的時間，原則上將上述之最後存取時間設為最後一筆資料的時間
-        public string message { get; set; }
+        public DateTime exp { get; set; } //訊息到期時間
+        public string msg { get; set; }
+    }
+
+    public class ChatMsgData4_TimeLimited //幾封未讀訊息(通知用)
+    {
+        public string name { get; set; }
+        public int count { get; set; }
     }
 
     //此Controller在發送和接收限時聊天的訊息
@@ -65,15 +70,61 @@ namespace TT2_API.Controllers
         [HttpPost]
         [JwtAuth]
         [Route("receive")]
-        public IEnumerable<ChatMsgData3> Receive([FromBody] ChatMsgData2 data)
+        public IEnumerable<ChatMsgData3_TimeLimited> Receive([FromBody] ChatMsgData2_TimeLimited data)
         {
             int myUid = int.Parse((Request.Properties["user"] as string));
 
-            var r = db.ChatMsg_TimeLimited.Where(a => (a.uid_from == data.uid) && (a.uid_to == myUid)//把「給我的」訊息都撈出來
-                                                        && (DateTime.Compare(a.time, data.start) >= 0))
-                                                        .OrderBy(a => a.time)
-                                                        .Select(a => new ChatMsgData3 { time = a.time, message = a.msg });
-            return r;
+            var r = db.ChatMsg_TimeLimited.Where(a => (a.uid_from == data.uid) && (a.uid_to == myUid)); //把某人「給我的」訊息都撈出來
+
+            List<ChatMsgData3_TimeLimited> r2 = new List<ChatMsgData3_TimeLimited>();
+
+            foreach (var i in r)
+            {
+                var iexp = i.time.Add(i.eff_period);
+                if ((DateTime.Compare(iexp, DateTime.UtcNow) >= 0)) // 期限尚有效的資訊
+                {
+                    ChatMsgData3_TimeLimited t = new ChatMsgData3_TimeLimited { exp = iexp, msg = i.msg };
+                    r2.Add(t);
+                }
+            }
+
+            r2.Sort((x, y) => { return x.exp > y.exp ? 1 : -1; });
+
+            return r2;
+        }
+
+        //GET /api/chat2/receive/
+        //取得所有資料
+        [HttpGet]
+        [JwtAuth]
+        [Route("receive")]
+        public IEnumerable<ChatMsgData4_TimeLimited> ReceiveAll()
+        {
+            int myUid = int.Parse((Request.Properties["user"] as string));
+
+            /* var r = from t1 in db.ChatMsg_TimeLimited
+                    where t1.uid_to == myUid
+                    group t1 by t1.uid_from into g
+                    join t2 in db.PermanentAccount on g.Key equals t2.uid
+                    select new ChatMsgData4_TimeLimited { name = t2.name, count = g.Count() }; */
+
+            var r = db.ChatMsg_TimeLimited.Where(a => (a.uid_to == myUid)).ToList(); //把「給我的」訊息都撈出來
+            List<ChatMsg_TimeLimited> r2 = new List<ChatMsg_TimeLimited>();
+
+            foreach (var i in r)
+            {
+                var iexp = i.time.Add(i.eff_period);
+                if ((DateTime.Compare(iexp, DateTime.UtcNow) >= 0)) // 期限尚有效的資訊
+                    r2.Add(i);
+            }
+
+            var r3 = from t1 in r2
+                    group t1 by t1.uid_from into g
+                    join t2 in db.PermanentAccount on g.Key equals t2.uid
+                    orderby t2.name
+                    select new ChatMsgData4_TimeLimited { name = t2.name, count = g.Count() };
+
+            return r3;
         }
 
         //GET /api/chat2/clear/
