@@ -107,8 +107,8 @@ namespace TT2_API.Controllers
             string TempMail = System.IO.File.ReadAllText(
                 System.Web.Hosting.HostingEnvironment.MapPath("~/Views/Shared/RegisterEmailTemplate.html"));
             //宣告Email驗證用的Url
-            string baseUrl = @"https://kaihao.tw:60089/";
-            //string baseUrl = Request.RequestUri.GetLeftPart(UriPartial.Authority);
+            //string baseUrl = @"https://kaihao.tw:60089/";
+            string baseUrl = Request.RequestUri.GetLeftPart(UriPartial.Authority);
             string[] paths = { "api", "account", "verify", acc.id.ToString(), acc.PermanentAccount.auth_code };
             UriBuilder ValidateUrl = new UriBuilder(baseUrl) { Path = Path.Combine(paths) };
             //藉由Service將使用者資料填入驗證信範本中

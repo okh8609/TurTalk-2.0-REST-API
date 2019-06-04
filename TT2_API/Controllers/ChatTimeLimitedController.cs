@@ -20,10 +20,12 @@ namespace TT2_API.Controllers
     public class ChatMsgData2_TimeLimited
     {
         public int uid { get; set; } //送出者的UID
+        public DateTime lut { get; set; } // last update time (取處的資料會從該時間之後開始)
     }
 
     public class ChatMsgData3_TimeLimited
     {
+        public DateTime time { get; set; } //訊息送到的時間
         public DateTime exp { get; set; } //訊息到期時間
         public string msg { get; set; }
     }
@@ -74,7 +76,9 @@ namespace TT2_API.Controllers
         {
             int myUid = int.Parse((Request.Properties["user"] as string));
 
-            var r = db.ChatMsg_TimeLimited.Where(a => (a.uid_from == data.uid) && (a.uid_to == myUid)); //把某人「給我的」訊息都撈出來
+            var r = db.ChatMsg_TimeLimited.Where(a => (DateTime.Compare(a.time, data.lut) >= 0) &&
+                                                      (((a.uid_from == data.uid) && (a.uid_to == myUid)) ||
+                                                       ((a.uid_from == myUid) && (a.uid_to == data.uid)))); //把某人的訊息都撈出來
 
             List<ChatMsgData3_TimeLimited> r2 = new List<ChatMsgData3_TimeLimited>();
 
@@ -83,18 +87,18 @@ namespace TT2_API.Controllers
                 var iexp = i.time.Add(i.eff_period);
                 if ((DateTime.Compare(iexp, DateTime.UtcNow) >= 0)) // 期限尚有效的資訊
                 {
-                    ChatMsgData3_TimeLimited t = new ChatMsgData3_TimeLimited { exp = iexp, msg = i.msg };
+                    ChatMsgData3_TimeLimited t = new ChatMsgData3_TimeLimited { exp = iexp, msg = i.msg, time = i.time };
                     r2.Add(t);
                 }
             }
 
-            r2.Sort((x, y) => { return x.exp > y.exp ? 1 : -1; });
+            r2.Sort((x, y) => { return x.time > y.time ? 1 : -1; }); //依據送出時間由小到大排序
 
             return r2;
         }
 
         //GET /api/chat2/receive/
-        //取得所有資料
+        //取得所有資料的數量(通知列表使用)
         [HttpGet]
         [JwtAuth]
         [Route("receive")]
@@ -119,10 +123,10 @@ namespace TT2_API.Controllers
             }
 
             var r3 = from t1 in r2
-                    group t1 by t1.uid_from into g
-                    join t2 in db.PermanentAccount on g.Key equals t2.uid
-                    orderby t2.name
-                    select new ChatMsgData4_TimeLimited { name = t2.name, count = g.Count() };
+                     group t1 by t1.uid_from into g
+                     join t2 in db.PermanentAccount on g.Key equals t2.uid
+                     orderby t2.name
+                     select new ChatMsgData4_TimeLimited { name = t2.name, count = g.Count() };
 
             return r3;
         }
