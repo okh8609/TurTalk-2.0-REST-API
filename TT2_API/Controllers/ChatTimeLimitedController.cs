@@ -20,18 +20,26 @@ namespace TT2_API.Controllers
     public class ChatMsgData2_TimeLimited
     {
         public int uid { get; set; } //送出者的UID
-        public DateTime lut { get; set; } // last update time (取處的資料會從該時間之後開始)
+        public DateTime LFt { get; set; } // Last fetch time (取處的資料會從該時間之後開始)
     }
 
     public class ChatMsgData3_TimeLimited
     {
         public DateTime time { get; set; } //訊息送到的時間
         public DateTime exp { get; set; } //訊息到期時間
+        public bool isMyMsg { get; set; } //這筆訊息是我送出的
         public string msg { get; set; }
+    }
+
+    public class ChatMsgData3_TimeLimited_with_UTCtime
+    {
+        public DateTime UTCtime { get; set; } //存取資料的時間點
+        public IEnumerable<ChatMsgData3_TimeLimited> chatMsgs { get; set; }
     }
 
     public class ChatMsgData4_TimeLimited //幾封未讀訊息(通知用)
     {
+        public int uid { get; set; }
         public string name { get; set; }
         public int count { get; set; }
     }
@@ -72,11 +80,12 @@ namespace TT2_API.Controllers
         [HttpPost]
         [JwtAuth]
         [Route("receive")]
-        public IEnumerable<ChatMsgData3_TimeLimited> Receive([FromBody] ChatMsgData2_TimeLimited data)
+        public ChatMsgData3_TimeLimited_with_UTCtime Receive([FromBody] ChatMsgData2_TimeLimited data)
         {
+            var nowUTCtime = DateTime.UtcNow;
             int myUid = int.Parse((Request.Properties["user"] as string));
 
-            var r = db.ChatMsg_TimeLimited.Where(a => (DateTime.Compare(a.time, data.lut) >= 0) &&
+            var r = db.ChatMsg_TimeLimited.Where(a => (DateTime.Compare(a.time, data.LFt) >= 0) &&
                                                       (((a.uid_from == data.uid) && (a.uid_to == myUid)) ||
                                                        ((a.uid_from == myUid) && (a.uid_to == data.uid)))); //把某人的訊息都撈出來
 
@@ -87,14 +96,19 @@ namespace TT2_API.Controllers
                 var iexp = i.time.Add(i.eff_period);
                 if ((DateTime.Compare(iexp, DateTime.UtcNow) >= 0)) // 期限尚有效的資訊
                 {
-                    ChatMsgData3_TimeLimited t = new ChatMsgData3_TimeLimited { exp = iexp, msg = i.msg, time = i.time };
+                    ChatMsgData3_TimeLimited t = null;
+                    if (i.uid_from == myUid)
+                        t = new ChatMsgData3_TimeLimited { exp = iexp, msg = i.msg, time = i.time, isMyMsg = true };
+                    else
+                        t = new ChatMsgData3_TimeLimited { exp = iexp, msg = i.msg, time = i.time, isMyMsg = false };
+
                     r2.Add(t);
                 }
             }
 
             r2.Sort((x, y) => { return x.time > y.time ? 1 : -1; }); //依據送出時間由小到大排序
 
-            return r2;
+            return new ChatMsgData3_TimeLimited_with_UTCtime { UTCtime = nowUTCtime, chatMsgs = r2 };
         }
 
         //GET /api/chat2/receive/
@@ -126,7 +140,7 @@ namespace TT2_API.Controllers
                      group t1 by t1.uid_from into g
                      join t2 in db.PermanentAccount on g.Key equals t2.uid
                      orderby t2.name
-                     select new ChatMsgData4_TimeLimited { name = t2.name, count = g.Count() };
+                     select new ChatMsgData4_TimeLimited { name = t2.name, count = g.Count(), uid = g.Key };
 
             return r3;
         }
