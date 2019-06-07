@@ -13,6 +13,7 @@ using TT2_API.Services;
 
 namespace TT2_API.Controllers
 {
+
     public class TempAcco
     {
         public int uid;
@@ -45,13 +46,15 @@ namespace TT2_API.Controllers
 
 
     //處理及時邀請功能的API
-    //這個算是體驗功能，為避免被濫用，帳號有效時間為10分鐘
+    //這個算是體驗功能，為避免被濫用，帳號有效時間為accEffTime分鐘
     //超過即無法在存取任何內容
     //但其對話紀錄仍會保存於資料庫
     //會產生一組臨時的uid和pwd
     [RoutePrefix("api/invite")]
     public class InvitationController : ApiController
     {
+        private const int accEffTime = 15; //帳號有效時間
+
         private ChatDBEntities db = new ChatDBEntities();
 
         #region 帳號部分
@@ -88,7 +91,7 @@ namespace TT2_API.Controllers
 
         // POST api/invite/login
         // 臨時帳號登入的API
-        // 此處已POST撰寫 可改用HTTP基本認證的方式進行帳號密碼的傳遞
+        // 此處以POST撰寫 可改用HTTP基本認證的方式進行帳號密碼的傳遞
         [HttpPost]
         [Route("login")]
         public HttpResponseMessage Login([FromBody]TempLoginData data)
@@ -97,14 +100,14 @@ namespace TT2_API.Controllers
 
             var r = db.TemporaryAccount.Find(data.uid);
 
-            if (DateTime.Compare(r.reg_time.AddMinutes(10), DateTime.UtcNow) < 0)
+            if (DateTime.Compare(r.reg_time.AddMinutes(accEffTime), DateTime.UtcNow) < 0)
             {
-                // 臨時帳號10分鐘內有效
+                // 臨時帳號accEffTime分鐘內有效
                 response = this.Request.CreateResponse<APIResult>(HttpStatusCode.Unauthorized, new APIResult()
                 {
                     Success = false,
                     Message = $"",
-                    Payload = "臨時帳號10分鐘內有效"
+                    Payload = $"臨時帳號{accEffTime}分鐘內有效"
                 });
             }
             else if (r.pwd == MainHelper.HashPassword(data.pwd))
@@ -116,7 +119,7 @@ namespace TT2_API.Controllers
 
                 // 設定該存取權杖的有效期限
                 IDateTimeProvider provider = new UtcDateTimeProvider();
-                var expDate = provider.GetNow().AddDays(7); //權杖效期7天
+                var expDate = provider.GetNow().AddMinutes(accEffTime); //權杖效期accEffTime分鐘
                 var unixEpoch = UnixEpoch.Value; // 1970-01-01 00:00:00 UTC
                 var secondsSinceEpoch = Math.Round((expDate - unixEpoch).TotalSeconds);
 
@@ -133,7 +136,7 @@ namespace TT2_API.Controllers
                 response = this.Request.CreateResponse<APIResult>(HttpStatusCode.OK, new APIResult()
                 {
                     Success = true,
-                    Message = $"帳號:{r.uid} / 密碼:{r.pwd}",
+                    Message = $"{r.ancestor_uid}", //回傳祖先的ID 這樣才能用哦~
                     Payload = $"{jwtToken}"
                 });
             }
